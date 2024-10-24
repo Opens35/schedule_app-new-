@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>{{ event.title }}</h1>
+
+    {% if error_messages %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for message in error_messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">お名前</label>
+            <input type="text" name="name" id="name" class="form-control" required>
+        </div>
+
+        <h2>日程の参加可否を選択してください</h2>
+        {% for date in event.dates.all %}
+            <div class="form-group">
+                <label for="availability_{{ date.id }}">{{ date.date }}{{ date.time|time:"H:i" }}</label>
+                <div>
+                    <button type="button" name="availability_{{ date.id }}" value="yes" class="btn btn-success">〇</button>
+                    <button type="button" name="availability_{{ date.id }}" value="maybe" class="btn btn-warning">△</button>
+                    <button type="button" name="availability_{{ date.id }}" value="no" class="btn btn-danger">✕</button>
+                </div>
+                <input type="hidden" name="availability_{{ date.id }}" id="availability_{{ date.id }}" value="">
+            </div>
+        {% endfor %}
+
+        <div class="form-group mt-3 mb-3">
+            <label for="comment">コメント(任意)</label>
+            <input type="text" name="comment" id="comment" class="form-control" placeholder="コメントを入力してください" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">送信</button>
+    </form>
+
+
+
+    <script>
+        document.querySelectorAll('button[name^="availability_"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const availabilityValue = this.value;
+                const dateId = this.name.split('_')[1];
+                const hiddenInput = document.getElementById(`availability_${dateId}`);
+
+                // 現在の値が同じなら選択を解除
+                if (hiddenInput.value === availabilityValue) {
+                    hiddenInput.value = ''; // 選択解除
+                    // ボタンのスタイルを元に戻す
+                    document.querySelectorAll(`button[name="availability_${dateId}"]`).forEach(btn => {
+                        btn.classList.remove('btn-primary');
+                    });
+                } else {
+                    hiddenInput.value = availabilityValue; // 新しい選択を保存
+                    // ボタンのスタイルを変更
+                    document.querySelectorAll(`button[name="availability_${dateId}"]`).forEach(btn => {
+                        btn.classList.remove('btn-success', 'btn-warning', 'btn-danger', 'btn-primary'); // すべてのボタンのスタイルをリセット
+                        if (btn.value === availabilityValue) {
+                            btn.classList.add('btn-primary'); // 選択されたボタンにスタイルを追加
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+{% endblock %}

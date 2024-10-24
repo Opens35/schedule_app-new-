@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>このイベントのURLを共有してください</h2>
+    <div class="input-group mb-3">
+        <input type="text" id="event-url" value="{{ event_url }}" readonly class="form-control" />
+        <div class="input-group-append">
+            <button onclick="copyToClipboard()" class="btn btn-secondary">コピー</button>
+        </div>
+    </div>
+
+    <h1>イベント名: {{ event.title }}</h1>
+
+    {% if event.description %}
+        <h4>メモ: {{ event.description }}</h4>
+    {% else %}
+    {% endif %}
+
+    <h4>作成者: {{ event.creator }}</h4>
+
+    <h2>参加者の可否</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>日程</th>
+                {% for participant in participants %}
+                    <th>{{ participant.name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for event_date in event.dates.all %}
+                <tr>
+                    <td>{{ event_date.date }} {{ event_date.time|time:"H:i" }}</td>
+                    {% for participant in participants %}
+                        <td>
+                            {% for availability in participant.availabilities.all %}
+                                {% if availability.event_date == event_date %}
+                                    {{ availability.get_availability_display }} <!-- 〇、△、× -->
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'event_participate' event.slug %}" class="btn btn-primary mt-3">参加可否を選択する</a>
+
+    <script>
+        function copyToClipboard() {
+            const urlField = document.getElementById('event-url');
+            urlField.select();
+            document.execCommand('copy');
+            alert('イベントのURLをコピーしました: ' + urlField.value);
+        }
+    </script>
+{% endblock %}

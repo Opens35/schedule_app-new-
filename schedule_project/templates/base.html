@@ -1,0 +1,131 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}調整さん風アプリ{% endblock %}</title>
+    <link href="https://code.jquery.com/ui/1.12.1/themes/flick/jquery-ui.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="{% static 'js/datepicker-ja.js' %}"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- BootstrapのCSSを読み込み -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'event_create' %}">調整さん風アプリ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'my_page' %}">マイページ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'event_create' %}">イベント作成</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">ログアウト</a>
+                        </li>
+                        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                            {% csrf_token %}
+                        </form>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">ログイン</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signup' %}">新規登録</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- メインコンテンツ -->
+    <div class="container mt-4">
+        {% block content %}
+        <!-- 各ページのコンテンツがここに挿入される -->
+        {% endblock %}
+    </div>
+
+    <!-- フッター -->
+    <footer class="footer bg-light text-center py-3">
+        <div class="container">
+            <span class="text-muted">© 2024 調整さん風アプリ</span>
+        </div>
+    </footer>
+
+    <script>
+
+        $(function() {
+            $.datepicker.setDefaults($.datepicker.regional['ja']);
+            var selectedDates = [];
+
+
+            // カレンダーの設定
+            $("#calendar").datepicker({
+                dateFormat: 'yy-mm-dd',
+                changeMonth: true,
+                changeYear: true,
+                showButtonPanel: true,
+                numberOfMonths: 1,
+                onSelect: function(dateText) {
+                    var time = $("#time").val();  // 選択された時間を取得
+                    if (!time) {
+                        alert("時間を選択してください。");
+                        return;
+                    }
+
+                    var dateWithTime = dateText + ' ' + time;  // 日付と時間を結合
+                    if (!selectedDates.includes(dateWithTime)) {
+                        selectedDates.push(dateWithTime);
+                    }
+
+                    // リストに表示
+                    updateSelectedDatesList();
+                }
+            });
+
+            // 選択された日付と時間をリストに表示する関数
+            function updateSelectedDatesList() {
+                var list = $("#selected-dates-list");
+                list.empty();  // リストをリセット
+                selectedDates.forEach(function(dateWithTime) {
+                    list.append('<li>' + dateWithTime + '<button type="button" class="remove-date" data-date="' + dateWithTime + '">削除</button></li>');
+                });
+                // 選択された日付と時間をフォームのinputに反映
+                $("#dates").val(selectedDates.join(','));
+            }
+
+            // 日付と時間の削除機能
+            $(document).on('click', '.remove-date', function() {
+                var dateToRemove = $(this).data('date');
+                selectedDates = selectedDates.filter(function(dateWithTime) {
+                    return dateWithTime !== dateToRemove;
+                });
+                updateSelectedDatesList();
+            });
+        });
+    </script>
+
+    <!-- BootstrapのJSと依存するPopper.jsを読み込み -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

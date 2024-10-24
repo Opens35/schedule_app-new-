@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container px-4 px-lg-5 mb-4 border border-secondary rounded" style="padding: 20px; max-width: 900px; margin: 0 auto;">
+        <h1 class="mb-5 text-center">イベント作成フォーム</h1>
+
+        {% if messages %}
+            <div class="alert alert-danger">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="text-center">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.title.label_tag }}
+                <input type="text" name="title" id="id_title" class="form-control" required style="max-width: 500px; margin: 0 auto;">
+            </div>
+            <div class = "mb-3">
+                {{ form.description.label_tag }}
+                <textarea name="description" id="id_description" class="form-control" style="max-width: 500px; margin: 0 auto;"></textarea>
+            </div>
+
+            <!-- 時間の選択 -->
+            <div class="mb-3">
+                <label for="time" class="form-label">時間を選択</label>
+                <input type="time" id="time" class="form-control text-center" required style="max-width: 500px; margin: 0 auto;">
+            </div>
+
+            <!-- カレンダーで日程を選択する部分 -->
+            <div class="mb-3">
+                <label for="dates" class="form-label">日程候補を選択</label>
+                <input type="hidden" name="dates" id="dates" class="form-control" style="max-width: 500px; margin: 0 auto;">
+            </div>
+
+            <!-- カレンダー表示 -->
+            <div id="calendar" class="mt-3 border rounded p-3 bg-white" style="max-width: 500px; margin: 0 auto;"></div>
+
+            <!-- 選択された日付を表示する部分 -->
+            <div class="mt-4 text-center">
+                <h4>選択された日程候補</h4>
+                <ul id="selected-dates-list" class="list-group" style="max-width: 500px; margin: 0 auto;"></ul>
+            </div>
+
+            <!-- 送信ボタン -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary" style="width: 300px; padding: 10px 20px;">作成</button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        /* カレンダーのスタイル */
+        #calendar {
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .ui-datepicker {
+            font-size: 14px;
+            width: auto;
+        }
+
+        /* 選択された日付リストのスタイル */
+        #selected-dates-list li {
+            margin-bottom: 5px;
+            padding: 5px;
+        }
+
+        /* 削除ボタンのスタイル */
+        .remove-date {
+            margin-left: 10px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 2px 8px;
+        }
+    </style>
+{% endblock %}
