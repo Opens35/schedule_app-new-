@@ -94,17 +94,14 @@ class ParticipantCreateView(View):
         name = request.POST.get('name', '匿名')  # 名前がなければ「匿名」を使用
         comment = request.POST.get('comment', '')  # コメントを取得
 
-        participant = Participant.objects.create(event=event, name=name, comment=comment)
-
         error_messages = []
         all_selected = True
 
+        # 未選択の日程をチェック
         for date in event.dates.all():
             availability = request.POST.get(f'availability_{date.id}')
             if not availability:  # 未選択の日程があった場合
                 all_selected = False
-            else:
-                Availability.objects.create(participant=participant, event_date=date, availability=availability)
 
         # 全ての日程で参加可否が選ばれていない場合、エラーメッセージを表示
         if not all_selected:
@@ -114,6 +111,16 @@ class ParticipantCreateView(View):
                 'event_dates': event.dates.all(),
                 'error_messages': error_messages
             })
+
+        # 参加者を保存
+        participant = Participant.objects.create(event=event, name=name, comment=comment)
+
+        # 参加可否を保存
+        for date in event.dates.all():
+            availability = request.POST.get(f'availability_{date.id}')
+            if availability:  # 選択された日程についてのみ保存
+                Availability.objects.create(participant=participant, event_date=date, availability=availability)
+
         return redirect('event_detail', slug=slug)
 
 

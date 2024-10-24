@@ -18,33 +18,46 @@
     <h4>作成者: {{ event.creator }}</h4>
 
     <h2>参加者の可否</h2>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>日程</th>
-                {% for participant in participants %}
-                    <th>{{ participant.name }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for event_date in event.dates.all %}
+    <div style="overflow-x: auto;">
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <td>{{ event_date.date }} {{ event_date.time|time:"H:i" }}</td>
+                    <th>日程</th>
+                    {% for participant in participants %}
+                        <th>{{ participant.name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for event_date in event.dates.all %}
+                    <tr>
+                        <td>{{ event_date.date }} {{ event_date.time|time:"H:i" }}</td>
+                        {% for participant in participants %}
+                            <td>
+                                {% for availability in participant.availabilities.all %}
+                                    {% if availability.event_date == event_date %}
+                                        {{ availability.get_availability_display }} <!-- 〇、△、× -->
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td> <!-- コメントのヘッダー -->
                     {% for participant in participants %}
                         <td>
-                            {% for availability in participant.availabilities.all %}
-                                {% if availability.event_date == event_date %}
-                                    {{ availability.get_availability_display }} <!-- 〇、△、× -->
-                                {% endif %}
-                            {% endfor %}
+                            {% if participant.comment %}
+                                <small class="text-muted">{{ participant.comment }}</small> <!-- コメントを表示 -->
+                            {% else %}
+                                <small class="text-muted">コメントなし</small> <!-- コメントがない場合の表示 -->
+                            {% endif %}
                         </td>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
     <a href="{% url 'event_participate' event.slug %}" class="btn btn-primary mt-3">参加可否を選択する</a>
 
