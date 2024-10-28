@@ -1,70 +1,72 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>{{ user.username }}さんが作成したイベント</h1>
+    <div class="container px-4 px-lg-5 mb-4"  style="padding: 20px; margin: 0 auto;">
+        <h1 class="text-center mb-3">{{ user.username }}さんが作成したイベント</h1>
 
-    <div class="row">
-        {% for event in object_list %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ event.title }}</h5>
-                    <p class="card-text">参加者数: {{ event.participants.count }}</p>
-                    <a href="{% url 'event_detail' event.slug %}" class="btn btn-primary">詳細</a>
-                    <form action="{% url 'event_delete' event.slug %}" method="post" style="display: inline-block;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？')">削除</button>
-                    </form>
+        <div class="row justify-content-center">
+            {% for event in object_list %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ event.title }}</h5>
+                        <p class="card-text">参加者数: {{ event.participants.count }}</p>
+                        <a href="{% url 'event_detail' event.slug %}" class="btn btn-primary">詳細</a>
+                        <form action="{% url 'event_delete' event.slug %}" method="post" style="display: inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？')">削除</button>
+                        </form>
+                    </div>
                 </div>
             </div>
+            {% empty %}
+            <p>現在、イベントがありません。</p>
+            {% endfor %}
         </div>
-        {% empty %}
-        <p>現在、イベントがありません。</p>
-        {% endfor %}
-    </div>
 
-    <!-- ページネーション -->
-    {% if is_paginated %}
-        <nav>
-            <ul class="pagination justify-content-center">
-                <!-- Previous page link -->
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&laquo;</span>
-                    </li>
-                {% endif %}
-
-                <!-- Page numbers -->
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <li class="page-item active">
-                            <span class="page-link">{{ num }}</span>
-                        </li>
-                    {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+        <!-- ページネーション -->
+        {% if is_paginated %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <!-- Previous page link -->
+                    {% if page_obj.has_previous %}
                         <li class="page-item">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&laquo;</span>
                         </li>
                     {% endif %}
-                {% endfor %}
 
-                <!-- Next page link -->
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                {% else %}
-                    <li class="page-item disabled">
-                        <span class="page-link">&raquo;</span>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-    {% endif %}
+                    <!-- Page numbers -->
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Next page link -->
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">&raquo;</span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
 {% endblock %}

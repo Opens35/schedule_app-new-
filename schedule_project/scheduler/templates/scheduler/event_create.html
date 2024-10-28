@@ -14,22 +14,23 @@
         <form method="post" class="text-center">
             {% csrf_token %}
             <div class="mb-3">
-                {{ form.title.label_tag }}
+                <label for="id_title" class="form-label">イベント名</label>
                 <input type="text" name="title" id="id_title" class="form-control" required style="max-width: 500px; margin: 0 auto;">
             </div>
             <div class = "mb-3">
-                {{ form.description.label_tag }}
+                <label for="id_description" class="form-label">メモ(任意)</label>
                 <textarea name="description" id="id_description" class="form-control" style="max-width: 500px; margin: 0 auto;"></textarea>
             </div>
 
             <!-- 時間の選択 -->
-            <div class="mb-3">
+            <div class="position-relative" style="max-width: 500px; margin: 0 auto;">
                 <label for="time" class="form-label">時間を選択</label>
-                <input type="time" id="time" class="form-control text-center" required style="max-width: 500px; margin: 0 auto;">
+                <input type="time" id="time" class="form-control text-center" required style="padding-left: 40px;">
+                <i class="fa fa-clock position-absolute" style="top: 50%; left: 10px; transform: translateY(-50%); color: #666;"></i>
             </div>
 
             <!-- カレンダーで日程を選択する部分 -->
-            <div class="mb-3">
+            <div class="mb-3 mt-3">
                 <label for="dates" class="form-label">日程候補を選択</label>
                 <input type="hidden" name="dates" id="dates" class="form-control" style="max-width: 500px; margin: 0 auto;">
             </div>

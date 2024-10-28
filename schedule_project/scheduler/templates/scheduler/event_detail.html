@@ -1,65 +1,72 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>このイベントのURLを共有してください</h2>
-    <div class="input-group mb-3">
-        <input type="text" id="event-url" value="{{ event_url }}" readonly class="form-control" />
-        <div class="input-group-append">
-            <button onclick="copyToClipboard()" class="btn btn-secondary">コピー</button>
+    <div class="container px-4 px-lg-5 mb-4" style="max-width: 900px; margin: 0 auto;">
+        <h2 class="text-center mb-3">このイベントのURLを共有してください</h2>
+        <div class="input-group mb-3 justify-content-center">
+            <input type="text" id="event-url" value="{{ event_url }}" readonly class="form-control" />
+            <div class="input-group-append">
+                <button onclick="copyToClipboard()" class="btn btn-secondary">コピー</button>
+            </div>
         </div>
     </div>
 
-    <h1>イベント名: {{ event.title }}</h1>
+    <div class="container px-4 px-lg-5 mb-4 border border-secondary rounded" style="max-width: 900px; margin: 0 auto; padding: 20px;">
+        <h1 class="text-center mb-3">イベント名: {{ event.title }}</h1>
 
-    {% if event.description %}
-        <h4>メモ: {{ event.description }}</h4>
-    {% else %}
-    {% endif %}
+        <h4 class="text-center mb-3">作成者: {{ event.creator }}</h4>
 
-    <h4>作成者: {{ event.creator }}</h4>
+        {% if event.description %}
+            <p class="text-center mb-3">メモ: {{ event.description }}</p>
+        {% endif %}
 
-    <h2>参加者の可否</h2>
-    <div style="overflow-x: auto;">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>日程</th>
-                    {% for participant in participants %}
-                        <th>{{ participant.name }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for event_date in event.dates.all %}
+        <p class="text-center mb-3">参加者の可否</p>
+        <div style="overflow-x: auto;">
+            <table class="table table-bordered" style="table-layout: fixed; min-width: 1000px;">
+                <thead>
                     <tr>
-                        <td>{{ event_date.date }} {{ event_date.time|time:"H:i" }}</td>
+                        <th style="width: 145px;">日程</th>
                         {% for participant in participants %}
-                            <td>
-                                {% for availability in participant.availabilities.all %}
-                                    {% if availability.event_date == event_date %}
-                                        {{ availability.get_availability_display }} <!-- 〇、△、× -->
-                                    {% endif %}
-                                {% endfor %}
+                            <th style="width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ participant.name }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event_date in event.dates.all %}
+                        <tr>
+                            <td>{{ event_date.date }} {{ event_date.time|time:"H:i" }}</td>
+                            {% for participant in participants %}
+                                <td style="min-width: 120px;">
+                                    {% for availability in participant.availabilities.all %}
+                                        {% if availability.event_date == event_date %}
+                                            {{ availability.get_availability_display }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>コメント</td>
+                        {% for participant in participants %}
+                            <td style="min-width: 120px;">
+                                {% if participant.comment %}
+                                    <small class="text-muted">{{ participant.comment }}</small>
+                                {% else %}
+                                    <small class="text-muted">なし</small>
+                                {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-                <tr>
-                    <td></td> <!-- コメントのヘッダー -->
-                    {% for participant in participants %}
-                        <td>
-                            {% if participant.comment %}
-                                <small class="text-muted">{{ participant.comment }}</small> <!-- コメントを表示 -->
-                            {% else %}
-                                <small class="text-muted">コメントなし</small> <!-- コメントがない場合の表示 -->
-                            {% endif %}
-                        </td>
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+            </table>
+        </div>
 
-    <a href="{% url 'event_participate' event.slug %}" class="btn btn-primary mt-3">参加可否を選択する</a>
+        <div class="text-center">
+            <a href="{% url 'event_participate' event.slug %}" class="btn btn-primary mt-3">参加可否を選択する</a>
+        </div>
+    </div>
 
     <script>
         function copyToClipboard() {
