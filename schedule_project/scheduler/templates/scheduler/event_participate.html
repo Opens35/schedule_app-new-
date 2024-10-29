@@ -17,7 +17,7 @@
             {% csrf_token %}
             <div class="form-group">
                 <p class="text-center mb-2">お名前</p>
-                <input type="text" name="name" id="name" class="form-control" required>
+                <input type="text" name="name" id="name" class="form-control" placeholder="名前を入力してください" value="{{ participant.name }}" required>
             </div>
 
             <p class="text-center mt-3 mb-3">日程の参加可否を選択してください</p>

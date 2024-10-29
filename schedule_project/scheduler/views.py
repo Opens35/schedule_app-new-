@@ -10,6 +10,7 @@ from .models import Event, EventDate, Participant, Availability
 from .forms import EventForm, EventDateForm, ParticipantForm
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.db.models import Count
 from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 from django.shortcuts import redirect
@@ -50,13 +51,20 @@ class EventDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event = self.object
+
         # イベントに関連する参加者を取得
         participants = Participant.objects.filter(event=event)
+
+        # 参加人数の総数
+        total_participants = participants.count()
+
+        # コンテキストに追加
+        context['total_participants'] = total_participants
         context['participants'] = participants
 
+        # イベントURLをコンテキストに追加
         event_url = self.request.build_absolute_uri(reverse('event_detail', kwargs={'slug': event.slug}))
-        context['participants'] = participants
-        context['event_url'] = event_url  # URLをコンテキストに追加
+        context['event_url'] = event_url
 
         return context
 
@@ -124,16 +132,3 @@ class ParticipantCreateView(View):
         return redirect('event_detail', slug=slug)
 
 
-# class ParticipantCreateView(CreateView):
-#     model = Participant
-#     form_class = ParticipantForm
-#     template_name = 'scheduler/event_participate.html'
-
-#     def form_valid(self, form):
-#         event = get_object_or_404(Event, slug=self.kwargs['slug'])
-#         form.instance.event = event
-#         form.instance.availability = self.request.POST.get('availability')
-#         return super().form_valid(form)
-
-#     def get_success_url(self):
-#         return reverse('event_detail', kwargs={'slug': self.object.event.slug})

@@ -63,3 +63,24 @@ th, td {
     overflow: hidden;
 }
 
+.availability-yes {
+    color: #28a745; /* 緑色 */
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.availability-maybe {
+    color: #17a2b8; /* 薄緑色 */
+    font-size: 24px;
+    font-weight: bold;
+    opacity: 0.7;
+}
+
+.availability-no {
+    color: #d3d3d3; /* グレー */
+    font-size: 24px;
+    font-weight: bold;
+    opacity: 0.6;
+}
+
+

@@ -19,15 +19,17 @@
             <p class="text-center mb-3">メモ: {{ event.description }}</p>
         {% endif %}
 
+        <p class="text-center mb-3">参加人数: {{ total_participants }}</p>
+
         <p class="text-center mb-3">参加者の可否</p>
         <div style="overflow-x: auto;">
-            <table class="table table-bordered" style="table-layout: fixed; min-width: 1000px;">
+            <table class="table table-bordered text-center" style="table-layout: fixed;">
                 <thead>
                     <tr>
                         <th style="width: 145px;">日程</th>
                         {% for participant in participants %}
-                            <th style="width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                {{ participant.name }}
+                            <th style="width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ participant.name }}">
+                                <span title="{{ participant.name }}">{{ participant.name }}</span>
                             </th>
                         {% endfor %}
                     </tr>
@@ -40,10 +42,12 @@
                                 <td style="min-width: 120px;">
                                     {% for availability in participant.availabilities.all %}
                                         {% if availability.event_date == event_date %}
-                                            {{ availability.get_availability_display }}
+                                            <span class="availability-{{ availability.availability }}">
+                                                {{ availability.get_availability_display }}
+                                            </span>
                                         {% endif %}
                                     {% endfor %}
-                                </td>
+                                </td> <!-- この位置でtdタグを閉じる必要があります -->
                             {% endfor %}
                         </tr>
                     {% endfor %}
