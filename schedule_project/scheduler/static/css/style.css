@@ -83,4 +83,28 @@ th, td {
     opacity: 0.6;
 }
 
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.card-title {
+    font-size: 1.2rem;
+}
+.btn-outline-primary {
+    border: 1px solid #007bff;
+    color: #007bff;
+}
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+.btn-outline-danger {
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
 

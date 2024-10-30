@@ -113,7 +113,7 @@ class ParticipantCreateView(View):
 
         # 全ての日程で参加可否が選ばれていない場合、エラーメッセージを表示
         if not all_selected:
-            error_messages.append("全ての日程について参加可否を選択してください。")
+            error_messages.append("全ての日程の参加可否を選択してください。")
             return render(request, 'scheduler/event_participate.html', {
                 'event': event,
                 'event_dates': event.dates.all(),
