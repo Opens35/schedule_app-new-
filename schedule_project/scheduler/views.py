@@ -132,3 +132,33 @@ class ParticipantCreateView(View):
         return redirect('event_detail', slug=slug)
 
 
+class ParticipantEditView(View):
+
+    def get(self, request, slug, participant_id):
+        event = get_object_or_404(Event, slug=slug)
+        participant = get_object_or_404(Participant, id=participant_id)
+        event_dates = event.dates.all()
+        availabilities = {a.event_date.id: a.availability for a in participant.availabilities.all()}
+
+        return render(request, 'scheduler/edit_participate.html', {
+            'event': event,
+            'participant': participant,
+            'event_dates': event_dates,
+            'availabilities': availabilities
+        })
+
+    def post(self, request, slug, participant_id):
+        event = get_object_or_404(Event, slug=slug)
+        participant = get_object_or_404(Participant, id=participant_id)
+        participant.name = request.POST.get('name', participant.name)
+        participant.comment = request.POST.get('comment', participant.comment)
+        participant.save()
+
+        # 参加可否データの更新
+        for date in event.dates.all():
+            availability_value = request.POST.get(f'availability_{date.id}')
+            availability, created = Availability.objects.get_or_create(participant=participant, event_date=date)
+            availability.availability = availability_value
+            availability.save()
+
+        return redirect('event_detail', slug=slug)

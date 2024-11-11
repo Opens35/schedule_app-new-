@@ -29,7 +29,7 @@
                         <th style="width: 145px;">参加者</th>
                         {% for participant in participants %}
                             <th style="width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ participant.name }}">
-                                <span title="{{ participant.name }}">{{ participant.name }}</span>
+                                <a href="{% url 'edit_participation' event.slug participant.id %}">{{ participant.name }}</a>
                             </th>
                         {% endfor %}
                     </tr>
